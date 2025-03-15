@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "D:\\BaiduSyncdisk\\C课设\\BC31\\DISK_C\\BORLANDC\\INCLUDE",
+                "D:\\BaiduSyncdisk\\C课设\\BC31\\DISK_C\\EXPRESS\\include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ]
+        }
+    ],
+    "version": 4
+}

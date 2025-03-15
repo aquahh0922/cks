@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "SVGA.C": "cpp",
+        "BMP.C": "cpp",
+        "BGIDEMO.C": "cpp",
+        "exmouse.h": "c"
+    }
+}
