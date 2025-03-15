@@ -941,6 +941,7 @@ int inputhz(char *outputarray,int length,int size,unsigned int color,unsigned in
                     mouse_off(&mouse);
                     if (inp.pinyin[0]!=0)
                     {
+                        
                         for (k = 0; k < 40; k++)
                         {
                             for (j = 0; j < 230; j++)
@@ -948,6 +949,7 @@ int inputhz(char *outputarray,int length,int size,unsigned int color,unsigned in
                                 Putpixel64k(x0+j, y+60+k, inputbar[k*230+j]);
                             }
                         }
+                       
                     }
                     Line1(x,y,x,y+16*size,backcolor);
                     mouse_on(mouse);
@@ -991,7 +993,7 @@ int inputhz(char *outputarray,int length,int size,unsigned int color,unsigned in
                     bar1(x,y,x+16*(size-1),y+16*size,backcolor);
                     Line1(x+16*(size-1),y,x+16*(size-1),y+16*size,backcolor);
                     Line1(x,y,x,y+16*size,color);
-                    mouse_on(mouse);
+                    
                     strcat(ip,inp.pinyin);
                     strcat(ip,".txt");
                     //bar1(x0,y+60,x0+228,y+100,backcolor);
@@ -1037,7 +1039,7 @@ int inputhz(char *outputarray,int length,int size,unsigned int color,unsigned in
                         j=0;
                         inputbarflag=0;
                     }
-                    
+                    mouse_on(mouse);
                     
                     
                 }
@@ -1292,6 +1294,7 @@ int inputhz(char *outputarray,int length,int size,unsigned int color,unsigned in
             {
                 page++;
                 //bar1(x0,y+60,x0+228,y+100,0xffff);
+                mouse_off(&mouse);
                 FillRoundedRectangle(x0,y+60,228,38,2,52863);
                 put_asc16_size(x0,y+60,1,1,inp.pinyin,0);
                 strcat(ip,inp.pinyin);
@@ -1315,12 +1318,13 @@ int inputhz(char *outputarray,int length,int size,unsigned int color,unsigned in
                     fclose(fp);
                 }
                 strcpy(ip,"pinyin\\");
-                
+                mouse_on(mouse);
             }
             else if (ch=='-'&&page>0)
             {
                 page--;
                 //bar1(x0,y+60,x0+228,y+100,0xffff);
+                mouse_off(&mouse);
                 FillRoundedRectangle(x0,y+60,228,38,2,52863);
                 put_asc16_size(x0,y+60,1,1,inp.pinyin,0);
                 strcat(ip,inp.pinyin);
@@ -1339,6 +1343,7 @@ int inputhz(char *outputarray,int length,int size,unsigned int color,unsigned in
                     fclose(fp);
                 }
                 strcpy(ip,"pinyin\\");
+                mouse_on(mouse);
             }
             
             else
@@ -1359,17 +1364,18 @@ int inputhz(char *outputarray,int length,int size,unsigned int color,unsigned in
                         
                         strcat(ip,inp.pinyin);
                         strcat(ip,".txt");
+                        mouse_off(&mouse);
                         if (inputbarflag==0)
                         {
-                            mouse_off(&mouse);
+                            
                             //bar1(x0,y+60,x0+228,y+100,0xffff);
                             FillRoundedRectangle(x0,y+60,228,38,2,52863);
                             
-                            mouse_on(mouse);
+                            
                             inputbarflag=1;
                         }
                         put_asc16_size(x0,y+60,1,1,inp.pinyin,0);
-                        
+                        mouse_on(mouse);
                         
                         if ((fp=fopen(ip,"r"))!=NULL)
                         {
