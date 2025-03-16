@@ -17,6 +17,12 @@ int mainmenu(int *flag)
             inputhz(hzsearch,49,2,0,0xffff,140,60);
             
         }
+        else if (mouse_press(267,160,357,250)==1)
+        {
+            *flag=3;
+            break;
+        }
+        
         
         
         delay(15);

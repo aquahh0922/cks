@@ -1,134 +1,37 @@
 #include "ExMouse.h"
 
-#define H 15
-#define W 12
 
-uint8_t arrow_shape[H][W] = {
-    {1,1,0,0,0,0,0,0,0,0,0,0},
-	{1,2,1,0,0,0,0,0,0,0,0,0},
-	{1,2,2,1,0,0,0,0,0,0,0,0},
-	{1,2,2,2,1,0,0,0,0,0,0,0},
-	{1,2,2,2,2,1,0,0,0,0,0,0},
-	{1,2,2,2,2,2,1,0,0,0,0,0},
-	{1,2,2,2,2,2,2,1,0,0,0,0},
-	{1,2,2,2,2,2,2,2,1,0,0,0},
-	{1,2,2,2,2,2,2,2,2,1,0,0},
-	{1,2,2,2,2,2,2,2,2,2,1,0},
-	{1,2,2,2,2,2,2,1,1,1,1,1},
-	{1,2,2,1,2,2,2,1,0,0,0,0},
-	{1,2,1,0,1,2,2,2,1,0,0,0},	
-	{1,1,0,0,0,1,2,2,2,1,0,0},	
-	{1,0,0,0,0,0,1,1,1,1,0,0}
-};
-
-
-
-uint8_t line_shape[H][W] = {
-    {0,1,1,1,1,1,1,1,1,1,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,0,0,0,0,1,0,0,0,0,0,0},
-    {0,1,1,1,1,1,1,1,1,1,0,0}
-};
-
-
-unsigned int mouse_background[H][W];           //存放被鼠标覆盖的区域
-
-
-//鼠标初始化
-void ExtMouseInit()
+void HandleMouseDrag(int *deltax, int *deltay, MOUSE *mouse, unsigned char sensitivity) 
 {
-    MouseInit();                  //鼠标复位，检测是否安装鼠标
-    MouseRange(0,0,1012,752);         //鼠标范围设置
-    MouseGet(&mouse);                  //得到鼠标状态
-    MouseSpeed(6,4);
-                     
-}
+    static DragState state = {0, 0, 0}; // 静态变量保持拖动状态
 
-//画鼠标
-//参数：鼠标变量，鼠标形态（0箭头，1输入）
-void ExtMouseDraw(MOUSE mouse,uint8_t shape)
-{
-    int i, j;
-    for (i = 0; i < H; i++)
-    {
-        for (j = 0; j < W; j++)
-        {
-            
-            mouse_background[i][j] = Getpixel64k(j + mouse.x, i + mouse.y);  //存储鼠标覆盖区
+    // 获取当前鼠标状态
+    MouseGet(mouse);
 
-            if (shape==0)
-            {
-                if (arrow_shape[i][j] == 1)
-                    Putpixel64k(mouse.x + j, mouse.y + i, 0);
-                else if (arrow_shape[i][j] == 2)
-                    Putpixel64k(mouse.x + j, mouse.y + i, 0xffff);
-               
-                
-            }
-            else
-            {
-               if (line_shape[i][j] == 1)
-                    Putpixel64k(mouse.x + j, mouse.y + i, 0);
-                else if (line_shape[i][j] == 2)
-                    Putpixel64k(mouse.x + j, mouse.y + i, 0xffff);
-               
-               
-            }
-            
-            
-            
+    if (mouse->key & 1) { // 左键按下
+        if (!state.isDragging) 
+        { // 拖动开始
+            state.isDragging = 1;
+            state.startX = mouse->x;
+            state.startY = mouse->y;
+        } else 
+        { // 拖动中
+            // 计算基于初始位置的增量（考虑灵敏度）
+            // 限制增量范围
+            *deltax = (*deltax > MAX_DELTA) ? MAX_DELTA : (*deltax < -MAX_DELTA) ? -MAX_DELTA :(mouse->x - state.startX) * sensitivity;
+            *deltay = (*deltay > MAX_DELTA) ? MAX_DELTA : (*deltay < -MAX_DELTA) ? -MAX_DELTA : (mouse->y - state.startY) * sensitivity;
+            // 更新起始点以实现"连续拖动"（根据需求选择）
+            state.startX = mouse->x;
+            state.startY = mouse->y;
         }
-    }
-
-}
-
-//隐藏鼠标
-//参数：鼠标变量
-void ExtMouseHide(MOUSE *mouse)
-{
-    int i,j;
-    int x,y;
-    x=mouse->x;
-    y=mouse->y;
-    for (i = 0; i < H; i++)
-    {
-        for (j = 0; j < W; j++)
-        {
-            
-            Putpixel64k(x + j, y + i, mouse_background[i][j]);   //画出原鼠标覆盖区
+    } 
+    else 
+    { // 左键释放
+        if (state.isDragging) 
+        { // 拖动结束
+            state.isDragging = 0;
+            *deltax = 0;
+            *deltay = 0;
         }
-    }
-}
-
-//更新并显示鼠标
-//参数：鼠标变量，鼠标形态（0箭头，1手，2线）
-void ExtMouseShow(MOUSE *mouse,uint8_t shape)
-{  
-    int i,j;       //循环变量
-    int x,y;
-    x=mouse->x;             //鼠标原位置坐标
-    y=mouse->y;         
-    MouseGet(mouse);    //得到新鼠标状态
-    if(mouse->x!=x||mouse->y!=y)         //鼠标移动就重新画鼠标
-    {
-        for (i = 0; i < H; i++)            
-        {
-            for (j = 0; j < W; j++)
-            {
-                Putpixel64k(x + j, y + i, mouse_background[i][j]);   //画出原鼠标覆盖区
-            }
-        }
-        ExtMouseDraw(*mouse,shape);                            //在新位置显示鼠标
     }
 }

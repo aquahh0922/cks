@@ -543,7 +543,7 @@ int Readbmp64k(int x, int y, const char * path)
 	/*非24位图则退出*/
 	if (bit != 24U)
 	{
-		return -1;
+		return -2;
 	}
 	
 	/*读取压缩类型*/
@@ -553,7 +553,7 @@ int Readbmp64k(int x, int y, const char * path)
 	/*采用压缩算法则退出*/
 	if (compression != 0UL)
 	{
-		return -1;
+		return -3;
 	}
 	
 	/*读取宽度、高度*/
@@ -564,7 +564,7 @@ int Readbmp64k(int x, int y, const char * path)
 	/*宽度超限则退出*/
 	if (width > SCR_WIDTH)
 	{
-		return -1;
+		return -4;
 	}
 
 	/*计算一行像素占字节数，包括补齐的空字节*/
@@ -582,7 +582,7 @@ int Readbmp64k(int x, int y, const char * path)
 	/*开辟行像素数据动态储存空间*/
 	if ((buffer = (COLORS24 *)malloc(linebytes)) == 0)
 	{
-		return -1;
+		return -5;
 	}
 	
 	/*行扫描形式读取图片数据并显示*/

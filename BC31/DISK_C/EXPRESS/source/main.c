@@ -31,7 +31,10 @@ int main()
             mainmenu(&flag);
             break;
 
-
+        case 3://订单详情界面
+            DetailedOrder(&flag);
+            break;
+            
         default:
             break;
         }
