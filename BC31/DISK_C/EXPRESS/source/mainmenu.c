@@ -12,17 +12,32 @@ int mainmenu(int *flag)
     while (1)
     {
         mouse_show(&mouse);
+
+
         if (mouse_press(140,60,860,110)==1)
         {
             inputhz(hzsearch,49,2,0,0xffff,140,60);
             
         }
-        else if (mouse_press(267,160,357,250)==1)
+        else if (mouse_press(467,160,557,250)==1)
         {
             *flag=3;
             break;
         }
         
+        // 个人设置页面
+        if (mouse_press(780,700,820,730)==1)
+        {
+            *flag = 24;
+            return 0;
+        }
+
+        // 店铺页面
+        if (mouse_press(267,160,357,250)==1)
+        {
+            *flag = 21;
+            return 0;
+        }
         
         
         delay(15);
@@ -43,8 +58,7 @@ void draw_mainmenu()
     Circle(312,205,45,0x0000);
     Circle(512,205,45,0x0000);
     Circle(712,205,45,0x0000);
-    Circle(512,205,45,0x0000);
-    Circle(512,205,45,0x0000);
+
     
     bar1(0,688,1024,768,0xffff);
     Circle(198,718,16,0x0000);

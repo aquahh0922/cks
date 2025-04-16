@@ -147,7 +147,8 @@ int reg(int *flag)
                 }
                 strcpy(newuser->name,name);
                 strcpy(newuser->code,code);
-                newuser->id=0;
+                newuser->type=USER_NORMAL;
+                newuser->balance=100.0f;
                 fwrite(newuser,sizeof(user),1,fp);
                 fclose(fp);
                 free(newuser);

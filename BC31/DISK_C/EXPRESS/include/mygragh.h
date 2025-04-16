@@ -15,4 +15,5 @@ void FillEllipse(int xc, int yc, int a, int b, unsigned int color);
 
 void DrawEye(int x, int y,float r);
 
+void ThickLine(int x1, int y1, int x2, int y2, unsigned int color, int thickness);
 #endif

@@ -9,6 +9,7 @@
 #include<dos.h>
 #include<math.h>
 #include<time.h>
+#include<limits.h>
 
 #include"hz.h"
 #include"ghz.h"
@@ -24,6 +25,12 @@
 #include "mainmenu.h"
 #include "forget.h"
 #include"DtlOrder.h"
+#include"write.h"
+#include"dijkstra.h"
+#include "data.h"
+#include "food.h"
+#include "settings.h"
+#include "cart.h"
 
 #define NUM0 0x5230
 #define NUM1 0x4f31
@@ -62,6 +69,14 @@
 #define EIGHT 0x0938
 #define NINE 0x0a39
 #define ZERO 0x0b30
+
 extern MOUSE mouse;//声明全局变量，本项目工程共用同一个鼠标结构
 //故每个（需要鼠标的）文件都应包含
+// extern volatile unsigned long timerTicks;
+// extern volatile int redrawFlag;
+// extern void interrupt (*oldTimerISR)(...);
+
+// extern PointWithTime *path;
+// extern int pathSize;
+
 #endif

@@ -36,7 +36,7 @@ typedef enum
 
 
 // 用户结构体
-typedef struct
+typedef struct user
 {
     char name[20];        // 用户名
     char code[20];        // 密码          

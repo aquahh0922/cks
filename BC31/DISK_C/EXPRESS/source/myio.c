@@ -1447,3 +1447,41 @@ int ishz(char* hz)
     }
     
 }
+
+// 统计字符串中汉字的个数
+int count_hz(const char* str) 
+{
+    int count = 0;
+    while (*str != '\0') {
+        if (ishz((char*)str)) {
+            count++;
+            str += 2; // 汉字占两个字节
+        } else {
+            str++; // 非汉字占一个字节
+        }
+    }
+    return count;
+}
+
+/*
+功能：计算浮点数中数字的个数
+input：const char* str
+output：数字的个数
+*/
+int count_float_digits(float number) {
+    char buffer[50];
+    int count = 0;
+    int i;
+
+    // 将浮点数转换为字符串
+    sprintf(buffer,  "%.1f", number);
+
+    // 遍历字符串，统计数字字符的个数
+    for (i = 0; buffer[i] != '\0'; i++) {
+        if (isdigit(buffer[i])) {
+            count++;
+        }
+    }
+
+    return count;
+}

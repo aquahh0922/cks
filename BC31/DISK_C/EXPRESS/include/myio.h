@@ -17,6 +17,8 @@ int inputcode2_reg(char *outputarray,int length,int size,unsigned int color,unsi
 
 int inputhz(char *outputarray,int length,int size,unsigned int color,unsigned int backcolor,int x,int y);
 int ishz(char* hz);
+int count_hz(const char* hz);
+int count_float_digits(float number) ;
 typedef struct hz
 {
     char pinyin[10];

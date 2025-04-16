@@ -203,3 +203,47 @@ void DrawEye(int x, int y,float r)
     Circlefill(x, y, r / 3, 0x0000);
 
 }
+
+//画斜线
+//参数：起始坐标，终止坐标，颜色，粗细
+void ThickLine(int x1, int y1, int x2, int y2, unsigned int color, int thickness)
+{
+    int dx = abs(x2 - x1);
+    int dy = abs(y2 - y1);
+    int sx = (x1 < x2) ? 1 : -1;
+    int sy = (y1 < y2) ? 1 : -1;
+    int err = dx - dy;
+    int i, j,e2;
+    int x = x1, y = y1;
+    int radius = (thickness <= 0) ? 0 : (thickness - 1) / 2;
+    
+    while (1) {
+        // 对于粗细为1的情况，只绘制中心点
+        if (thickness <= 1) {
+            Putpixel64k(x, y, color);
+        } else {
+            // 在每个点位置绘制一个实心圆，半径为(thickness-1)/2
+            for (i = -radius; i <= radius; i++) {
+                for (j = -radius; j <= radius; j++) {
+                    if (i*i + j*j <= radius*radius) {
+                        Putpixel64k(x + i, y + j, color);
+                    }
+                }
+            }
+        }
+        
+        // 终止条件
+        if (x == x2 && y == y2) break;
+        
+        // Bresenham 算法计算下一个点
+        e2 = 2 * err;
+        if (e2 > -dy) {
+            err -= dy;
+            x += sx;
+        }
+        if (e2 < dx) {
+            err += dx;
+            y += sy;
+        }
+    }
+}

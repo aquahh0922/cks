@@ -3,6 +3,7 @@
         "SVGA.C": "cpp",
         "BMP.C": "cpp",
         "BGIDEMO.C": "cpp",
-        "exmouse.h": "c"
+        "exmouse.h": "c",
+        "NONAME00.C": "cpp"
     }
 }

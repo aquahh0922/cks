@@ -2,7 +2,7 @@
 
 //欢迎函数
 //参数：特征值指针
-int welcome(int *flag,user * users)
+int welcome(int *flag,struct user * users)
 {
     //定义和初始化用户名和密码数组
     char name[20]="\0";
@@ -196,8 +196,8 @@ int welcome(int *flag,user * users)
         //鼠标点击忘记密码
         else if (mouse_press(650,640,800,670)==1)
         {
-           *flag=3;
-            return 1;
+           *flag=13;
+            return 0;
         } 
         
         
@@ -228,6 +228,7 @@ void draw_wel()
 
     //画眼睛
     DrawEye(800, 445, 16);
+    
 
     //快捷调试通道
    /*  bar1(0,0,50,50,0xffff); */
