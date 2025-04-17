@@ -19,6 +19,7 @@ int inputhz(char *outputarray,int length,int size,unsigned int color,unsigned in
 int ishz(char* hz);
 int count_hz(const char* hz);
 int count_float_digits(float number) ;
+int outputmix(char *outputarray,int length,int size,unsigned int color,unsigned int backcolor,int x,int y);
 typedef struct hz
 {
     char pinyin[10];

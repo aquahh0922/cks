@@ -1485,3 +1485,32 @@ int count_float_digits(float number) {
 
     return count;
 }
+
+int outputmix(char *outputarray,int length,int size,unsigned int color,unsigned int backcolor,int x,int y)
+{
+    char hanzi[3];
+    char ch;
+    unsigned char i=0;
+    while (*outputarray!='\0')
+    {
+        if (ishz(outputarray)==1)
+        {
+            strncpy(hanzi,outputarray,2);
+            hanzi[2]='\0';
+            puthz(x,y,hanzi,16*size,8*size,color);
+            outputarray+=2;
+            i+=2;
+            x+=16*size;
+        }
+        else
+        {
+            ch=*outputarray;
+            Put_Asc16_Size(x,y,size,size,ch,color);
+            outputarray++;
+            i++;
+            x+=8*size;
+        }
+        
+    }
+    return i;
+}

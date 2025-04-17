@@ -30,8 +30,9 @@ typedef enum
 
 typedef enum
 {
-	ORDER_PENDING = 1,
-	ORDER_COMPLETED = 0
+    Finished = 2,
+	Delivering = 1,
+	SearchDeliver = 0
 } OrderState;
 
 
@@ -124,12 +125,12 @@ typedef struct {
 typedef struct order {
     char name[20];                  // 用户名
     StoreCategory type;             // 订单类型（餐饮/超市/快递）
-    OrderState state;               // 订单状态（进行中/已完成）
+    char state;               // 订单状态（等待配送，配送中，已完成）
     char order_num[20];             // 订单号（唯一标识）
     float money;                    // 订单总金额
     time_t time;                    // 下单时间
-    unsigned short delivery_address;      // 收货地址（用户输入的配送地址）
-    unsigned short payment_address;               // 下单地址（商家地址）
+    unsigned char delivery_address;      // 收货地址（用户输入的配送地址）
+    unsigned char payment_address;               // 下单地址（商家地址）
     OrderItem items[MAX_ORDER_ITEMS]; // 购买的商品项列表
     unsigned char item_count;       // 实际购买的商品项数量
 } order;

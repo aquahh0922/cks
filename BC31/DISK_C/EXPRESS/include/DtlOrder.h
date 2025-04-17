@@ -4,12 +4,12 @@
 
 #define NODE_NUM 75
 #define ROAD_NUM 93
-int DetailedOrder(int *flag,struct RealTimeOrder *rto);
+int DetailedOrder(int *flag,struct RealTimeOrder *rto,struct order *ord);
 void drawDetailedOrder();
 void drawMap(char mode,int cx,int cy);
 int BinarySearch(struct node *p,int num);
 int random_range(int min, int max); 
-int NewOrder(int start,int end,struct RealTimeOrder *rto,unsigned char *OrderNum);
+int NewOrder(struct RealTimeOrder *rto,unsigned char *OrderNum,struct order *ord);
 
 typedef enum CentralPoint
 {
@@ -19,6 +19,7 @@ typedef enum CentralPoint
     MapminHeight=603,
     MapmidWidth=652,
     MapmidHeight=402,
+    BottomLow=550
 }CentralPoint;
 
 typedef struct coordinate

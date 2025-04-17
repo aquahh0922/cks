@@ -18,6 +18,7 @@ int main()
     unsigned char OrderNum=0;
     // char state=0;
     PointWithTime *pwttemp=NULL;
+    order *ord=NULL;
 
     if (users==NULL)
     {
@@ -67,14 +68,23 @@ int main()
         printf("memery error in main\n");
         exit(1);
     }
+    if ((ord=(order*)malloc(sizeof(order)))==NULL)
+    {
+        CloseSVGA();
+        printf("memery error in main\n");
+        exit(1);
+    }
+    
+    
+    
+    
+    
    
     
-    
-    
-   
-    
-    
-    NewOrder(start,end,rto,&OrderNum);
+    ord->payment_address=201;
+    ord->delivery_address=101;
+    ord->state=SearchDeliver;
+    NewOrder(rto,&OrderNum,ord);
     
     // printf("%ld",rto->initime);    
     // exit(1);
@@ -162,7 +172,7 @@ int main()
             break;
 
         case 3://订单详情界面
-            DetailedOrder(&flag,rto);
+            DetailedOrder(&flag,rto,ord);
             break;
 
         case 13://忘记密码界面

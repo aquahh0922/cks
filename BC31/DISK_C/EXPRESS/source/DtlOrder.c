@@ -1,27 +1,70 @@
 #include "DtlOrder.h"
 
-int DetailedOrder(int *flag,struct RealTimeOrder *rto)
+int DetailedOrder(int *flag,struct RealTimeOrder *rto,struct order *ord)
 {
     char ch;
     char mapsize=1;
     int deltax=0,deltay=0,cx=CenterX,cy=CenterY;
-    unsigned char i,CurrentPoint;
+    unsigned char i,CurrentPoint,SearchTime;
     unsigned int deltat,t=0;
     FloatCoordinate UnitVector;
     int maxy;
+    char timeflag=0,roadflag=0;
+    char DeliverAd[20];
+    node n;
+    FILE *fp;
+    if ((fp=fopen("data\\node.dat","r"))==NULL)
+    {
+        CloseSVGA();
+        printf("Cannot open node.txt\n");
+        exit(1);
+    }
+    
+    
+    i=BinarySearch(&n,ord->delivery_address);
+    fseek(fp,i*sizeof(n),SEEK_SET);
+    fread(&n,sizeof(n),1,fp);
+    strcpy(DeliverAd,n.name);
+    fclose(fp);
+    
+    
+    if (ord->state=SearchDeliver)
+    {
+        SearchTime=random_range(1,20);
+    }
+    
+    
     mouse_off(&mouse);
     delay(100);
     
     drawMap(mapsize,cx,cy);
-    for ( i = 0; i < rto->path_len2-1; i++)
+    // FillRoundedRectangle(50,BottomLow+10,924,80,5,0xffff);
+    // puthz(55,BottomLow+10,"订单信息",32,32,0x0000);
+    if (ord->state==Delivering)
     {
-        ThickLine(cx+rto->path2[i].point.x-MapmidWidth,cy+rto->path2[i].point.y-MapmidHeight,cx+rto->path2[i+1].point.x-MapmidWidth,cy+rto->path2[i+1].point.y-MapmidHeight,26620,3);
-    }
+        for ( i = 0; i < rto->path_len2-1; i++)
+        {
+            ThickLine(cx+rto->path2[i].point.x-MapmidWidth,cy+rto->path2[i].point.y-MapmidHeight,cx+rto->path2[i+1].point.x-MapmidWidth,cy+rto->path2[i+1].point.y-MapmidHeight,26620,3);
+        }
 
-    for ( i = 0; i < rto->path_len1-1; i++)
-    {
-        ThickLine(cx+rto->path1[i].point.x-MapmidWidth,cy+rto->path1[i].point.y-MapmidHeight,cx+rto->path1[i+1].point.x-MapmidWidth,cy+rto->path1[i+1].point.y-MapmidHeight,3569,3);
+        for ( i = 0; i < rto->path_len1-1; i++)
+        {
+            ThickLine(cx+rto->path1[i].point.x-MapmidWidth,cy+rto->path1[i].point.y-MapmidHeight,cx+rto->path1[i+1].point.x-MapmidWidth,cy+rto->path1[i+1].point.y-MapmidHeight,3569,3);
+        }
+        roadflag=1;
     }
+    else if (ord->state==Finished)
+    {
+        for ( i = 0; i < rto->pathSize-1; i++)
+        {
+            ThickLine(cx+rto->path[i].point.x-MapmidWidth,cy+rto->path[i].point.y-MapmidHeight,cx+rto->path[i+1].point.x-MapmidWidth,cy+rto->path[i+1].point.y-MapmidHeight,64704,3);
+        }
+        
+    }
+   
+    
+    
+    
 
     mouse_on(mouse);
     // CloseSVGA();
@@ -76,14 +119,28 @@ int DetailedOrder(int *flag,struct RealTimeOrder *rto)
             
             
         }
-
-        if (rto->state==0)
+        if (ord->state=SearchDeliver)
+        {
+            time(&(rto->currentime));
+            if (rto->currentime-rto->initime>SearchTime&&timeflag==0)
+            {
+                ord->state=Delivering;
+                rto->initime=rto->currentime;
+                timeflag=1;
+            }
+            
+            
+        }
+        
+        if (ord->state=Delivering)
         {
             time(&(rto->currentime));
             // CloseSVGA();
             // printf("%ld",rto->currentime);
             // exit(1);
             deltat=(int)(rto->currentime-rto->initime);
+           
+            
             CurrentPoint=0;
             t=0;
             while (CurrentPoint<rto->pathSize)
@@ -104,7 +161,7 @@ int DetailedOrder(int *flag,struct RealTimeOrder *rto)
             }
             else
             {
-                rto->state=1;
+               ord->state=Finished;
             }
         }
         
@@ -123,13 +180,13 @@ int DetailedOrder(int *flag,struct RealTimeOrder *rto)
 
                 if (cy > MapminHeight)
                 cy = MapminHeight;
-                else if (cy < 600 - MapminHeight)
-                cy = 600 - MapminHeight;
+                else if (cy < BottomLow - MapminHeight)
+                cy = BottomLow - MapminHeight;
 
                 // 绘制图像
                 mouse_off(&mouse);
                 drawMap(mapsize,cx,cy);
-                bar1(100, 100, 103, 103, 2047);
+               
                 mouse_on(mouse);
                 deltax = 0;
                 deltay = 0;
@@ -149,8 +206,8 @@ int DetailedOrder(int *flag,struct RealTimeOrder *rto)
 
                 if (cy > MapmidHeight)
                 cy = MapmidHeight;
-                else if (cy < 600 - MapmidHeight)
-                cy = 600 - MapmidHeight;
+                else if (cy < BottomLow - MapmidHeight)
+                cy = BottomLow - MapmidHeight;
 
                 // 绘制图像
                 mouse_off(&mouse);
@@ -164,15 +221,20 @@ int DetailedOrder(int *flag,struct RealTimeOrder *rto)
                 // }
                 // exit(1);
                 drawMap(mapsize,cx,cy);
-                for ( i = 0; i < rto->path_len2-1; i++)
+                if (ord->state==Delivering)
                 {
-                    ThickLine(cx+rto->path2[i].point.x-MapmidWidth,cy+rto->path2[i].point.y-MapmidHeight,cx+rto->path2[i+1].point.x-MapmidWidth,cy+rto->path2[i+1].point.y-MapmidHeight,26620,3);
-                }
+                    for ( i = 0; i < rto->path_len2-1; i++)
+                    {
+                        ThickLine(cx+rto->path2[i].point.x-MapmidWidth,cy+rto->path2[i].point.y-MapmidHeight,cx+rto->path2[i+1].point.x-MapmidWidth,cy+rto->path2[i+1].point.y-MapmidHeight,26620,3);
+                    }
 
-                for ( i = 0; i < rto->path_len1-1; i++)
-                {
-                    ThickLine(cx+rto->path1[i].point.x-MapmidWidth,cy+rto->path1[i].point.y-MapmidHeight,cx+rto->path1[i+1].point.x-MapmidWidth,cy+rto->path1[i+1].point.y-MapmidHeight,3569,3);
+                    for ( i = 0; i < rto->path_len1-1; i++)
+                    {
+                        ThickLine(cx+rto->path1[i].point.x-MapmidWidth,cy+rto->path1[i].point.y-MapmidHeight,cx+rto->path1[i+1].point.x-MapmidWidth,cy+rto->path1[i+1].point.y-MapmidHeight,3569,3);
+                    }
                 }
+                
+                
                 
                 // if (*OrderState==0)
                 // {
@@ -182,7 +244,7 @@ int DetailedOrder(int *flag,struct RealTimeOrder *rto)
                 //     }
                 //     ThickLine(cx+pwt[CurrentPoint].point.x-MapmidWidth,cy+pwt[CurrentPoint].point.y-MapmidHeight,cx+pwt[CurrentPoint].point.x+UnitVector.x*(t-deltat)-MapmidWidth,cy+pwt[CurrentPoint].point.y+UnitVector.y*(t-deltat)-MapmidHeight,64704,3);
                 // }
-                if (rto->state==1)
+                if (ord->state==Finished)
                 {
                     for ( i = 0; i < rto->pathSize-1; i++)
                     {
@@ -190,7 +252,7 @@ int DetailedOrder(int *flag,struct RealTimeOrder *rto)
                     }
                     
                 }
-                bar1(0, 600, 1024, 768, 54938);
+                bar1(0, BottomLow, 1024, 768, 54938);
               
                 mouse_on(mouse);
                 // CloseSVGA();
@@ -203,7 +265,20 @@ int DetailedOrder(int *flag,struct RealTimeOrder *rto)
                 deltay = 0;
             }
             mouse_off(&mouse);
-            if (rto->state==0)
+            if (ord->state==Delivering&&roadflag==0)
+            {
+                for ( i = 0; i < rto->path_len2-1; i++)
+                {
+                    ThickLine(cx+rto->path2[i].point.x-MapmidWidth,cy+rto->path2[i].point.y-MapmidHeight,cx+rto->path2[i+1].point.x-MapmidWidth,cy+rto->path2[i+1].point.y-MapmidHeight,26620,3);
+                }
+
+                for ( i = 0; i < rto->path_len1-1; i++)
+                {
+                    ThickLine(cx+rto->path1[i].point.x-MapmidWidth,cy+rto->path1[i].point.y-MapmidHeight,cx+rto->path1[i+1].point.x-MapmidWidth,cy+rto->path1[i+1].point.y-MapmidHeight,3569,3);
+                }
+        
+            }
+            if (ord->state==Delivering)
             {   
                 maxy=cy+rto->path[0].point.y-MapmidHeight;
                 for ( i = 0; i < CurrentPoint; i++)
@@ -227,9 +302,9 @@ int DetailedOrder(int *flag,struct RealTimeOrder *rto)
             // CloseSVGA();
             // printf("%d\n ",maxy);
             // exit(1);
-            if (maxy>600)
+            if (maxy>BottomLow)
             {
-                bar1(0, 600, 1024, 768, 54938);
+                bar1(0, BottomLow, 1024, 768, 54938);
     
             }
             
@@ -264,7 +339,7 @@ void drawMap(char mode,int cx,int cy)
         Readbmp64k(cx, cy-MapminHeight, "img\\mapmin2.bmp");
         Readbmp64k(cx-MapminWidth, cy, "img\\mapmin3.bmp");
         Readbmp64k(cx, cy, "img\\mapmin4.bmp");
-        bar1(0, 600, 1024, 768, 54938);
+        bar1(0, BottomLow, 1024, 768, 54938);
     }
     else if (mode==1)//大地图缩小1.5倍
     {
@@ -272,7 +347,7 @@ void drawMap(char mode,int cx,int cy)
         Readbmp64k(cx, cy-MapmidHeight, "img\\mapmid2.bmp");
         Readbmp64k(cx-MapmidWidth, cy, "img\\mapmid3.bmp");
         Readbmp64k(cx, cy, "img\\mapmid4.bmp");
-        bar1(0, 600, 1024, 768, 54938);
+        bar1(0, BottomLow, 1024, 768, 54938);
     }
    
     
@@ -324,7 +399,7 @@ int random_range(int min, int max)
     return min + (random_num % range);
 }
 
-int NewOrder(int start,int end,struct RealTimeOrder *rto,unsigned char *OrderNum)
+int NewOrder(struct RealTimeOrder *rto,unsigned char *OrderNum,struct order *ord)
 {
     FILE *fp;
     node *pn;
@@ -387,7 +462,7 @@ int NewOrder(int start,int end,struct RealTimeOrder *rto,unsigned char *OrderNum
     for ( i = 0; i < 6; i++)
     {
         rp[i].location=random_range(1,59);
-        rp[i].shortest=dijkstra(graph,rp[i].location,start,prev);
+        rp[i].shortest=dijkstra(graph,rp[i].location,ord->payment_address,prev);
     }
     // CloseSVGA();
     //     for ( i = 0; i < 6; i++)
@@ -419,12 +494,12 @@ int NewOrder(int start,int end,struct RealTimeOrder *rto,unsigned char *OrderNum
         printf("Cannot malloc path2\n");
         exit(1);
     }
-    shortest2=dijkstra(graph,index,start,prev);
+    shortest2=dijkstra(graph,index,ord->payment_address,prev);
     
 
     if (shortest2!=INT_MAX)
     {
-        current=start;    
+        current=ord->payment_address;    
         path_len2=0;
         while (current!=-1)
         {
@@ -455,7 +530,7 @@ int NewOrder(int start,int end,struct RealTimeOrder *rto,unsigned char *OrderNum
         prev[i]=-1;
     }
 
-    shortest=dijkstra(graph,start,end,prev);
+    shortest=dijkstra(graph,ord->payment_address,ord->delivery_address,prev);
 
     if ((path=(BriefPoint*)malloc(sizeof(BriefPoint)*NODE_NUM))==NULL)
     {
@@ -467,7 +542,7 @@ int NewOrder(int start,int end,struct RealTimeOrder *rto,unsigned char *OrderNum
     
     if (shortest!=INT_MAX)
     {
-        current=end;    
+        current=ord->delivery_address;    
         path_len=0;
         while (current!=-1)
         {
@@ -635,7 +710,7 @@ int NewOrder(int start,int end,struct RealTimeOrder *rto,unsigned char *OrderNum
     fclose(fp);//关闭文件
     free(pr);
     time(&(rto->initime));
-    
+    ord->state=SearchDeliver;
 }
 
 // void interrupt newTimerISR(...) {
